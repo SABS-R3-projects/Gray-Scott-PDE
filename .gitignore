@@ -1,0 +1,10 @@
+# venv
+env
+
+# dist and build
+dist
+build
+Gray_Scott_PDE.egg-info
+
+# pints
+pints
