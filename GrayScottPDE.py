@@ -3,10 +3,31 @@ import numpy as np
 from scipy.sparse import spdiags
 
 class GrayScott(pints.ForwardModel):
-    def __init__(self, N):
+    def __init__(self, N, u0=None, v0=None):
+        super().__init__()
         self.N = N
-        self.u = 0.5*np.ones((N, N))
-        self.v = 0.5*np.ones((N, N))
+
+        # Check initial values
+        if u0 is None:
+            self.u0 = 0.5*np.ones((N, N))
+        else:
+            self.u0 = u0
+            if len(self.u0) != N:
+                raise ValueError('Initial value must have the same size as N')
+            if np.any(self.u0 < 0):
+                raise ValueError('Initial states can not be negative.')
+
+        if v0 is None:
+            self.v0 = 0.5*np.ones((N, N))
+        else:
+            self.v0 = v0
+            if len(self.v0) != N:
+                raise ValueError('Initial value must have the same size as N')
+            if np.any(self.v0 < 0):
+                raise ValueError('Initial states can not be negative.')
+
+    def n_outputs(self):
+        return 2*self.N*self.N
 
     def n_parameters(self):
         """
@@ -37,17 +58,16 @@ class GrayScott(pints.ForwardModel):
             return L
 
         def integrate(Nt, Du, Dv, F, k, L):
-            u = self.u.reshape((self.N * self.N))
-            v = self.v.reshape((self.N * self.N))
+            u_i = self.u0.reshape((self.N * self.N))
+            v_i = self.v0.reshape((self.N * self.N))
+            self.output = np.zeros((Nt, 2*self.N*self.N))
 
             # evolve in time using Euler method
             for i in range(Nt):
-                uvv = u * v * v
-                u = u + (Du * L.dot(u) - uvv + F * (1 - u))
-                v = v + (Dv * L.dot(v) + uvv - (F + k) * v)
-
-            self.u = u
-            self.v = v
+                uvv = u_i * v_i * v_i
+                u_i = u_i + (Du * L.dot(u_i) - uvv + F * (1 - u_i))
+                v_i = v_i + (Dv * L.dot(v_i) + uvv - (F + k) * v_i)
+                self.output[i] = np.hstack((u_i, v_i))
 
         L = laplacian(self.N)
         F = parameters[0]
@@ -57,7 +77,7 @@ class GrayScott(pints.ForwardModel):
         Nt = len(times)
 
         integrate(Nt, Du, Dv, F, k, L)
-        return np.array([self.u.reshape((self.N, self.N)), self.v.reshape((self.N, self.N))])
+        return self.output
 
 
 
