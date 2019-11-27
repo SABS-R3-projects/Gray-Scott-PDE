@@ -3,6 +3,9 @@ import numpy as np
 from scipy.sparse import spdiags
 
 class GrayScott(pints.ForwardModel):
+    """
+    Text
+    """
     def __init__(self, N, u0=None, v0=None):
         super().__init__()
         self.N = N

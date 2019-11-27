@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Gray-Scott partial differential equation system &#8212; Gray-Scott PDE 0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gray-scott-partial-differential-equation-system">
+<h1>Gray-Scott partial differential equation system<a class="headerlink" href="#gray-scott-partial-differential-equation-system" title="Permalink to this headline">¶</a></h1>
+<p><strong>Augustin, Neiro, van der Plas</strong></p>
+<p>The Gray-Scott PDE is a an example of a reaction diffusion system, i.e.
+a systems of PDEs that combine linear diffusion with nonlinear interactions. Gray and Scott
+formulated their model in 1983 as follows</p>
+<p><span class="math notranslate nohighlight">\(u_t = \epsilon_1 \Delta u - u v^2 + F(1 - u)\)</span></p>
+<p><span class="math notranslate nohighlight">\(v_t = \epsilon_2 \Delta v + u v^2 - (k+F)v\)</span></p>
+<span class="target" id="module-GrayScottPDE"></span><dl class="class">
+<dt id="GrayScottPDE.GrayScott">
+<em class="property">class </em><code class="sig-prename descclassname">GrayScottPDE.</code><code class="sig-name descname">GrayScott</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">u0=None</em>, <em class="sig-param">v0=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GrayScottPDE.html#GrayScott"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GrayScottPDE.GrayScott" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text</p>
+<dl class="method">
+<dt id="GrayScottPDE.GrayScott.n_outputs">
+<code class="sig-name descname">n_outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GrayScottPDE.html#GrayScott.n_outputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GrayScottPDE.GrayScott.n_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of outputs this model has. The default is 1.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GrayScottPDE.GrayScott.n_parameters">
+<code class="sig-name descname">n_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GrayScottPDE.html#GrayScott.n_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GrayScottPDE.GrayScott.n_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dimension of the parameter vector. The Gray-Scott model has two parameters F and k</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="GrayScottPDE.GrayScott.simulate">
+<code class="sig-name descname">simulate</code><span class="sig-paren">(</span><em class="sig-param">parameters</em>, <em class="sig-param">times</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GrayScottPDE.html#GrayScott.simulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GrayScottPDE.GrayScott.simulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate the Gray-Scott PDE system with the finite difference method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameters</strong> – a two-dimensional parameter vector [F, k]</p></li>
+<li><p><strong>times</strong> – time-points where the model is simulated, t0 = 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>simulated values of the PDE system [u, v]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Gray-Scott PDE</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Augustin, Neiro, van der Plas.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,7 @@
+***************
+Log-likelihoods
+***************
+
+Hello
+
+.. autoclass:: GrayScott
