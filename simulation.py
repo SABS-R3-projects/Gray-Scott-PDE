@@ -14,4 +14,4 @@ plot = Plot(N)
 #plot.animation(values, "animations2.gif")
 
 inference = Inference(model, times, values)
-inference.optimise()
+inference.mcmc()
