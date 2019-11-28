@@ -16,8 +16,8 @@ class Plot():
         """
         Plots a 2d plot of the Gray-Scott PDE system given the values for u and v at a given time-point.
 
-        :param values_t: a 1D array containing the values for u and v at a given time-point. The quadratic spatial matrix is at the
-        given time-point is (NxN), then the length of the values_t should be 2*N*N, where the first N*N values correspond to u and the next
+        :param values_t: a 1D array containing the values for u and v at a given time-point. If the quadratic spatial matrix is at the
+        given time-point (NxN), then the length of the values_t should be 2*N*N, where the first N*N values correspond to u and the next
         N*N values correspond to v. In other words, values_t is a reshaped 1D array that contains all the values of two spatial matrices
         giving the concentration of u and v at a given time-point.
         :param filename_u: filename for outputting u
@@ -42,15 +42,44 @@ class Plot():
         # Saving the v plot
         plt.savefig(filename_v)
 
-    def animation(self, values, filename_u):
+    def animation(self, values, filename_u, filename_v):
+        """
+        Plots a 2d animation (gif) of the evolution of the PDE system
+
+        :param values: a (t x n_t) 2D array where the values of the system n_t are given at the timepoints t. If the quadratic spatial matrix is at the
+        given time-point (NxN), then the length of n_t should be 2*N*N, where the first N*N values correspond to u and the next
+        N*N values correspond to v. In other words, values_t is a reshaped 1D array that contains all the values of two spatial matrices
+        giving the concentration of u and v at a given time-point.
+        :param filename_u: filename for outputting u
+        :param filename_v: filename for outputting v
+        :return: filename_u.gif and filename_v.gif
+        """
+
+        #Plotting u
+
+        #First the values
         values_u = values[0][0: self.N * self.N]
         fig = plab.figure()
         plab.pcolormesh(values_u.reshape((self.N, self.N)), cmap=plab.cm.RdBu)
 
-        def animate(i):
+        def animate_u(i):
             values_u = values[i][0: self.N * self.N]
             plab.pcolormesh(values_u.reshape((self.N, self.N)), cmap=plab.cm.RdBu)
 
-        anim = animation.FuncAnimation(fig, animate, frames=range(1, values.shape[0], 10), blit=False)
+        anim_u = animation.FuncAnimation(fig, animate_u, frames=range(1, values.shape[0], 10), blit=False)
         writer = PillowWriter(fps=100)
-        anim.save(filename_u, writer=writer)
+        anim_u.save(filename_u, writer=writer)
+
+        values_v = values[0][0: self.N * self.N]
+        fig = plab.figure()
+        plab.pcolormesh(values_v.reshape((self.N, self.N)), cmap=plab.cm.RdBu)
+
+        def animate_v(i):
+            values_v = values[i][0: self.N * self.N]
+            plab.pcolormesh(values_v.reshape((self.N, self.N)), cmap=plab.cm.RdBu)
+
+        anim_v = animation.FuncAnimation(fig, animate_v, frames=range(1, values.shape[0], 10), blit=False)
+        writer = PillowWriter(fps=100)
+        anim_v.save(filename_v, writer=writer)
+
+
