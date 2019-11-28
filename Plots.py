@@ -15,7 +15,7 @@ class Plot():
         plt.pcolor(values_t_v.reshape((self.N, self.N)), cmap=plt.cm.RdBu)
         plt.savefig(filename_v)
 
-    def animation(self, values):
+    def animation(self, values, filename_u):
         values_u = values[0][0: self.N * self.N]
 
         fig = plab.figure()
@@ -27,4 +27,4 @@ class Plot():
 
         anim = animation.FuncAnimation(fig, animate, frames=range(1, values.shape[0]), blit=False)
         writer = PillowWriter(fps=100)
-        anim.save('animation.gif', writer=writer)
+        anim.save(filename_u, writer=writer)

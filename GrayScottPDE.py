@@ -44,7 +44,7 @@ class GrayScott(pints.ForwardModel):
         """
         Return the dimension of the parameter vector. The Gray-Scott model has two parameters F and k
         """
-        return 2
+        return 4
 
     def simulate(self, parameters, times):
         """
@@ -82,21 +82,21 @@ class GrayScott(pints.ForwardModel):
             """
             u_i = self.u0.reshape((self.N * self.N))
             v_i = self.v0.reshape((self.N * self.N))
-            self.output = np.zeros(((floor(Nt/100)+1), 2*self.N*self.N))
+            self.output = np.zeros(((floor(Nt/10)), 2*self.N*self.N))
 
             for i in range(Nt):
                 uvv = u_i * v_i * v_i
                 u_i = u_i + (Du * L.dot(u_i) - uvv + F * (1 - u_i))
                 v_i = v_i + (Dv * L.dot(v_i) + uvv - (F + k) * v_i)
-                if (i % 100 == 0):
-                    self.output[floor((i+1)/100)] = np.hstack((u_i, v_i))
+                if (i % 10 == 0):
+                    self.output[floor((i)/10)] = np.hstack((u_i, v_i))
 
         L = laplacian(self.N)
         Du = parameters[0]
         Dv = parameters[1]
         F = parameters[2]
         k = parameters[3]
-        Nt = len(times)
+        Nt = len(times)*10
 
         integrate(Nt, Du, Dv, F, k, L)
         return self.output
