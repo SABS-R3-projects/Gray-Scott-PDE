@@ -1,6 +1,7 @@
 import pints
 import numpy as np
 from scipy.sparse import spdiags
+from math import floor
 
 class GrayScott(pints.ForwardModel):
     """
@@ -81,20 +82,20 @@ class GrayScott(pints.ForwardModel):
             """
             u_i = self.u0.reshape((self.N * self.N))
             v_i = self.v0.reshape((self.N * self.N))
-            #self.output = np.zeros((Nt, 2*self.N*self.N))
+            self.output = np.zeros(((floor(Nt/100)+1), 2*self.N*self.N))
 
-            # evolve in time using Euler method
             for i in range(Nt):
                 uvv = u_i * v_i * v_i
                 u_i = u_i + (Du * L.dot(u_i) - uvv + F * (1 - u_i))
                 v_i = v_i + (Dv * L.dot(v_i) + uvv - (F + k) * v_i)
-            self.output = np.hstack((u_i, v_i))
+                if (i % 100 == 0):
+                    self.output[floor((i+1)/100)] = np.hstack((u_i, v_i))
 
         L = laplacian(self.N)
-        F = parameters[0]
-        k = parameters[1]
-        Du = 0.14
-        Dv = 0.06
+        Du = parameters[0]
+        Dv = parameters[1]
+        F = parameters[2]
+        k = parameters[3]
         Nt = len(times)
 
         integrate(Nt, Du, Dv, F, k, L)

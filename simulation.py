@@ -1,20 +1,16 @@
-from GrayScottPDE import GrayScott
 import numpy as np
 import pints
-import matplotlib.pyplot as plt
 
+from GrayScottPDE import GrayScott
+from Plots import Plot
 N = 200
 model = GrayScott(N)
-parameters = [0.060, 0.062]
-times = np.arange(0,30000)
+parameters = [0.14, 0.06, 0.060, 0.062]
+times = np.arange(0,1032)
 values = model.simulate(parameters, times)
-print(values.shape)
-values1 = values[0:N*N]
-plt.pcolor(values1.reshape((N, N)), cmap=plt.cm.RdBu)
-plt.savefig("GSPDE.png")
-values2 = values[N*N:2*N*N]
-plt.pcolor(values2.reshape((N, N)), cmap=plt.cm.RdBu)
-plt.savefig("GSPDE2.png")
+plot = Plot(N)
+plot.plot2d(values[11])
+
 # Add some noise
 #values += np.random.normal(0, 0.02, values.shape)
 
