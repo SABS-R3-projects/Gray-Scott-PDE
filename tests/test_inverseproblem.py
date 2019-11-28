@@ -73,13 +73,43 @@ def test_find_parameter():
     data_ys = analytical_solution + noise_std * np.random.randn(number_data_points)
 
     problem = InverseProblem(model, data_times, data_ys)
-    # error_measure = SumOfSquaresError(problem)
     initial_parameters = [0.9, 0.15] # x0, Lambda
-    # optimisation = OptimisationController(error_measure, initial_parameters, method=XNES)
 
     estimated_parameters, _ = problem.find_parameter(initial_parameters)
 
     assert np.allclose(a=estimated_parameters, b=parameters, rtol=5.0e-02)
+
+
+def test_sample_posterior():
+    """Example based testing of self.sample_posterior().
+    """
+    x0 = 1.0
+    Lambda = 0.1
+    parameters = np.array([x0, Lambda])
+    times = np.arange(0, 10, 0.1)
+    analytical_solution = exponential_growth(x0, Lambda, times)
+
+    # generate data
+    noise_std = 0.2
+    number_data_points = len(times)
+    data_times = times
+    data_ys = analytical_solution + noise_std * np.random.randn(number_data_points)
+
+    # find intitial parameters for sampling
+    model = TestModel()
+    problem = InverseProblem(model, data_times, data_ys)
+    initial_parameters = [0.9, 0.15] # x0, Lambda
+    estimated_parameters, _ = problem.find_parameter(initial_parameters)
+
+    # prior bounds for sampling
+    estimated_parameters = [estimated_parameters[0], estimated_parameters[1], noise_std]
+    lower_bound = [0, 0, 0]
+    upper_bound = [5, 10, 5]
+    print(problem.sample_posterior(initial_parameter=estimated_parameters,
+                                   lower_bound=lower_bound,
+                                   upper_bound=upper_bound))
+
+    assert True
 
 
 
