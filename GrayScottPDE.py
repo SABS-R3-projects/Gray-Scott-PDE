@@ -4,15 +4,17 @@ from scipy.sparse import spdiags
 
 class GrayScott(pints.ForwardModel):
     """
-    Text
+    The Gray Scott model inheriting the pints.ForwardModel class
     """
     def __init__(self, N, u0=None, v0=None):
         super().__init__()
         self.N = N
+        N, N2, r = self.N, np.int(self.N / 2), 16
 
         # Check initial values
         if u0 is None:
-            self.u0 = 0.5*np.ones((N, N))
+            self.u0 = np.zeros((N, N))
+            self.u0[N2 - r:N2 + r, N2 - r:N2 + r] = 0.50
         else:
             self.u0 = u0
             if len(self.u0) != N:
@@ -21,7 +23,8 @@ class GrayScott(pints.ForwardModel):
                 raise ValueError('Initial states can not be negative.')
 
         if v0 is None:
-            self.v0 = 0.5*np.ones((N, N))
+            self.v0 =np.zeros((N, N))
+            self.v0[N2 - r:N2 + r, N2 - r:N2 + r] = 0.25
         else:
             self.v0 = v0
             if len(self.v0) != N:
@@ -30,6 +33,10 @@ class GrayScott(pints.ForwardModel):
                 raise ValueError('Initial states can not be negative.')
 
     def n_outputs(self):
+        """
+        Return the number of outputs
+        :return:
+        """
         return 2*self.N*self.N
 
     def n_parameters(self):
@@ -61,22 +68,33 @@ class GrayScott(pints.ForwardModel):
             return L
 
         def integrate(Nt, Du, Dv, F, k, L):
+            """
+            Solves the PDE
+
+            :param Nt:
+            :param Du:
+            :param Dv:
+            :param F:
+            :param k:
+            :param L:
+            :return:
+            """
             u_i = self.u0.reshape((self.N * self.N))
             v_i = self.v0.reshape((self.N * self.N))
-            self.output = np.zeros((Nt, 2*self.N*self.N))
+            #self.output = np.zeros((Nt, 2*self.N*self.N))
 
             # evolve in time using Euler method
             for i in range(Nt):
                 uvv = u_i * v_i * v_i
                 u_i = u_i + (Du * L.dot(u_i) - uvv + F * (1 - u_i))
                 v_i = v_i + (Dv * L.dot(v_i) + uvv - (F + k) * v_i)
-                self.output[i] = np.hstack((u_i, v_i))
+            self.output = np.hstack((u_i, v_i))
 
         L = laplacian(self.N)
         F = parameters[0]
         k = parameters[1]
-        Du = 2e-5
-        Dv = 1e-5
+        Du = 0.14
+        Dv = 0.06
         Nt = len(times)
 
         integrate(Nt, Du, Dv, F, k, L)
