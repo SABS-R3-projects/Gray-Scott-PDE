@@ -3,13 +3,14 @@ import pints
 
 from GrayScottPDE import GrayScott
 from Plots import Plot
+
 N = 200
 model = GrayScott(N)
 parameters = [0.14, 0.06, 0.060, 0.062]
-times = np.arange(0,1032)
+times = np.arange(0,10000)
 values = model.simulate(parameters, times)
 plot = Plot(N)
-plot.plot2d(values[11])
+plot.animation(values)
 
 # Add some noise
 #values += np.random.normal(0, 0.02, values.shape)
