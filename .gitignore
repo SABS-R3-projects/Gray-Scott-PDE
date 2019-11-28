@@ -1,0 +1,17 @@
+# venv
+env
+
+# dist and build
+dist
+build
+Gray_Scott_PDE.egg-info
+
+# pints
+pints
+
+# testing cache
+__pycache__
+.pytest_cache
+
+# vs code
+.vscode
