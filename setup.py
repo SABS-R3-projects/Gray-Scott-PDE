@@ -84,6 +84,7 @@ setup(
         'tabulate',
         'pytest',
         'os',
+        'jupyter',
         'sys',
         'tqdm'
     ]
