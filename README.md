@@ -51,4 +51,4 @@ This project is release under a BSD 3-Clause License.
 
 Enjoy!
 
-[picture](figures/u_matrix_F=0.035_k=0.06.gif)
+[picture](/figures/u_matrix_F=0.035_k=0.06.gif)
