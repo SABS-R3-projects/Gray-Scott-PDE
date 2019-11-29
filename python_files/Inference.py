@@ -36,4 +36,4 @@ class Inference():
 
         #Run SNES
         found_parameters, found_value = pints.optimise(score, x0, boundaries=boundaries, method=pints.SNES)
-        print(found_parameters)
+        return found_parameters
