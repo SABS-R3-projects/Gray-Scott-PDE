@@ -146,7 +146,7 @@ class Solver(pints.ForwardModel):
 
         return new_u_mat, new_v_mat
 
-    def solve(self, parameters):
+    def solve(self, parameters, verbose=False):
         """Solving function for PDE.
 
         Arguments:
@@ -167,25 +167,33 @@ class Solver(pints.ForwardModel):
         assert len(parameters) == 2
         self.F = parameters[0]  # find F and k from input
         self.k = parameters[1]
-
-        print(f'Solving {self.solve_eq} model in {self.n_times} time steps.\n\n')
+        if verbose:
+            print(f'Solving {self.solve_eq} model in {self.n_times} time steps.\n\n')
 
         ## Create matrices to save frames during solving at regular intervals
         self.save_u_mat = np.zeros((self.n_save_frames, self.n_x, self.n_y))
         self.save_v_mat = np.zeros((self.n_save_frames, self.n_x, self.n_y))
         self.save_times = np.zeros(self.n_save_frames)
-        i_save = 0
+        self.i_save = 0
 
         ## Forward difference time solving loop:
-        for i_tau in tqdm(range(self.n_times)):
-            if i_tau in self.save_frames:  # if at the save interval, save matrices
-                self.save_u_mat[i_save, :, :] = self.u_mat.copy()
-                self.save_v_mat[i_save, :, :] = self.v_mat.copy()
-                self.save_times[i_save] = i_tau
-                i_save += 1
+        def forward_diff(i_t):
+            if i_t in self.save_frames:  # if at the save interval, save matrices
+                self.save_u_mat[self.i_save, :, :] = self.u_mat.copy()
+                self.save_v_mat[self.i_save, :, :] = self.v_mat.copy()
+                self.save_times[self.i_save] = i_t
+                self.i_save += 1
             old_u = self.u_mat.copy()
             old_v = self.v_mat.copy()
             self.u_mat, self.v_mat = self.update_uv(old_u_mat=old_u, old_v_mat=old_v)  # do update
+
+        if verbose:  # show progress bar
+            for i_tau in tqdm(range(self.n_times)):
+                forward_diff(i_t=i_tau)
+        elif not verbose:  # do not show progress bar
+            for i_tau in range(self.n_times):
+                forward_diff(i_t=i_tau)
+
         self.save_u_mat[-1, :, :] = self.u_mat.copy()
         self.save_v_mat[-1, :, :] = self.v_mat.copy()
 
@@ -245,7 +253,7 @@ class Solver(pints.ForwardModel):
     def n_parameters(self):
         """Returns number of parameters for inference (F and K)"""
         return 2
-    
+
     def simulate(self, parameters, times):
         """Wraps the solve function inside simulate to be compatible with pints"""
         value = self.solve(parameters)
