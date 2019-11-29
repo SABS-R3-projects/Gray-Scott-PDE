@@ -29,6 +29,7 @@ class Solver(pints.ForwardModel):
     """
     def __init__(self, n_grid=256, n_time_points=8000, model='gray-scott',
                 n_save_frames=100, fix_seed=False):
+
         self.solve_eq = model
         self.eps_1 = 0.14  # hard-coded. These values were found to work well with dx=dy=dt=1
         self.eps_2 = 0.06
@@ -244,3 +245,7 @@ class Solver(pints.ForwardModel):
     def n_parameters(self):
         """Returns number of parameters for inference (F and K)"""
         return 2
+    
+    def simulate(self, parameters, times):
+        value = self.solve(parameters)
+        return value
