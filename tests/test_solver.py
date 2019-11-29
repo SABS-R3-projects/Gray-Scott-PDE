@@ -19,7 +19,7 @@ def convergence_test():
 
 def diffusion_test():
     """Test for correct diffusion and periodic boundary conditions:"""
-    solv = Solver(n_save_frames=4000, n_time_points=300, model='heat', n_grid=32, fix_seed=True)
+    solv = Solver(n_save_frames=20, n_time_points=300, model='heat', n_grid=32, fix_seed=True)
 
     assert np.isclose(solv.init_u_mat.sum(), solv.u_mat.sum())  # assert convergence of energy (i.e diffusion and boundary)
     return True
