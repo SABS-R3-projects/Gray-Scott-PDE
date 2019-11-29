@@ -82,6 +82,10 @@ class Solver(pints.ForwardModel):
             self.interaction = False
             self.decay = False
 
+        ## convergence paraemtesr, defined in solve()
+        self.til_convergence = False
+        self.rel_tol = None
+
     def diffusion_update(self, old_u, diff_coef=1):
         """Perform numerical 2D laplacian update (via central finite difference)
         with periodic boundary conditions.
@@ -146,7 +150,8 @@ class Solver(pints.ForwardModel):
 
         return new_u_mat, new_v_mat
 
-    def solve(self, parameters, til_convergence=False, rel_tol=1e-4, verbose=False):
+    def solve(self, parameters, til_convergence=False, rel_tol=1e-4, verbose=False,
+                init=True):
         """Solving function for PDE.
 
         Arguments:
@@ -164,6 +169,8 @@ class Solver(pints.ForwardModel):
                 - relative tolerance level that determines stopping criterion
             verbose: bool, default=False
                 - if true, print info and progress bar during solving.
+            init: bool, default=True
+                - if true, re-initialise u and v mat.
         Returns:
         ----------------
             save_u_mat: float of len (n_save_frames * n_x * n_y)
@@ -183,7 +190,12 @@ class Solver(pints.ForwardModel):
         self.i_save = 0
         self.convergence = np.zeros((self.n_times))
         if til_convergence:
+            self.til_convergence = til_convergence
             self.convergence_reached = False
+            self.rel_tol = rel_tol
+        if init:
+            self.u_mat = self.init_u_mat
+            self.v_mat = self.init_v_mat
         ## Forward difference time solving loop:
         def forward_diff(i_t):
             if i_t in self.save_frames:  # if at the save interval, save matrices
@@ -198,6 +210,8 @@ class Solver(pints.ForwardModel):
                                     + (np.sum(np.abs(self.v_mat - old_v)) / np.sum(np.abs(old_v))))
             if til_convergence:
                 if self.convergence[i_t] < rel_tol: ## reached convergence
+                    if verbose:
+                        print(f'Convergence reached after {i_tau}/{self.n_times} time points')
                     self.convergence_reached = True
                     self.save_u_mat[self.i_save, :, :] = self.u_mat.copy()
                     self.save_v_mat[self.i_save, :, :] = self.v_mat.copy()
@@ -206,8 +220,10 @@ class Solver(pints.ForwardModel):
                     self.save_v_mat = self.save_v_mat[:self.i_save, :, :]
                     self.save_times = self.save_times[:self.i_save]
                     self.n_save_frames = len(self.save_times)
-                    if verbose:
-                        print(f'Convergence reached after {i_tau}/{self.n_times} time points')
+                    self.n_times = i_t + 1
+                    self.t_end = i_t
+                    self.t_arr = np.linspace(self.t_start, self.t_end, self.n_times)
+                    self.convergence = self.convergence[:i_t+1]
                     return True
                 else:
                     return False
@@ -275,6 +291,27 @@ class Solver(pints.ForwardModel):
         plab.title(f'u matrix, F={self.F}, k={self.k} after {self.n_times} iterations.')
         if save_animation:
             anim.save(filename_an, writer=writer)
+
+    def plot_convergence(self, save_convergence=False):
+        """Function to plot convergence of matrices.
+
+        Arguments:
+        -----------------
+            save_convergence: bool
+                - If true, save convergence plot to file
+        """
+        plt.rcParams['figure.figsize'] = (9, 5)
+        plt.plot(self.t_arr, self.convergence, linewidth=2, label='Difference')
+        if self.til_convergence:
+            plt.hlines(y=self.rel_tol, xmin=self.t_arr[0], xmax=self.t_arr[-1], label='convergence criterion')
+        plt.xlabel('Time t'); plt.ylabel('Sum of absolute differences U and V \n between t and t+1')
+        plt.grid(True); plt.yscale('log');
+        plt.title('Convergence plot')
+        plt.legend()
+
+        if save_convergence:
+            file_name = f'convergence_ F={self.F}, k={self.k} after {self.n_times} iterations.png'
+            plt.savefig(file_name)
 
     def n_outputs(self):
         """Returns number of outputs."""
