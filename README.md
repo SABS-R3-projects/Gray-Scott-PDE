@@ -48,3 +48,7 @@ All the code can be run by executing the jupyter notebook `Main.ipynb`. The Jupy
 
 
 This project is release under a BSD 3-Clause License.
+
+Enjoy!
+
+[picture](figures/u_matrix_F=0.035_k=0.06.gif)
