@@ -204,6 +204,8 @@ class Solver(pints.ForwardModel):
                                     + (np.sum(np.abs(self.v_mat - old_v)) / np.sum(np.abs(old_v))))
             if til_convergence:
                 if self.convergence[i_t] < rel_tol: ## reached convergence
+                    if verbose:
+                        print(f'Convergence reached after {i_tau}/{self.n_times} time points')
                     self.convergence_reached = True
                     self.save_u_mat[self.i_save, :, :] = self.u_mat.copy()
                     self.save_v_mat[self.i_save, :, :] = self.v_mat.copy()
@@ -216,8 +218,6 @@ class Solver(pints.ForwardModel):
                     self.t_end = i_t
                     self.t_arr = np.linspace(self.t_start, self.t_end, self.n_times)
 
-                    if verbose:
-                        print(f'Convergence reached after {i_tau}/{self.n_times} time points')
                     return True
                 else:
                     return False
