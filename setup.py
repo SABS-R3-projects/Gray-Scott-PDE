@@ -83,9 +83,7 @@ setup(
         'matplotlib>=1.5',
         'tabulate',
         'pytest',
-        'os',
         'jupyter',
-        'sys',
         'tqdm'
     ]
 )
