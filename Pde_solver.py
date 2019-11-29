@@ -247,5 +247,6 @@ class Solver(pints.ForwardModel):
         return 2
     
     def simulate(self, parameters, times):
+        """Wraps the solve function inside simulate to be compatible with pints"""
         value = self.solve(parameters)
         return value
