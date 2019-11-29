@@ -4,7 +4,7 @@
 
 ## Gray-Scott equations:
 
-he Gray-Scott equations originate from the class of reaction-diffusion equations, and depending or their two-dimensional parameter settings <img src="https://tex.s2cms.ru/svg/(F%2C%20k)" alt="(F, k)" /> they can model a variety of patterns, such as spots, stripes, maze formations, ripples et cetera [1]. The Gray-Scott equations model the following chemical reaction: 
+The Gray-Scott equations originate from the class of reaction-diffusion equations, and depending or their two-dimensional parameter settings <img src="https://tex.s2cms.ru/svg/(F%2C%20k)" alt="(F, k)" /> they can model a variety of patterns, such as spots, stripes, maze formations, ripples et cetera [1]. The Gray-Scott equations model the following chemical reaction: 
 
 <img src="https://tex.s2cms.ru/svg/U%20%20%2B%202V%20%5Cto%203V" alt="U  + 2V \to 3V" />
 
