@@ -146,18 +146,24 @@ class Solver(pints.ForwardModel):
 
         return new_u_mat, new_v_mat
 
-    def solve(self, parameters, verbose=False):
+    def solve(self, parameters, til_convergence=False, rel_tol=1e-4, verbose=False):
         """Solving function for PDE.
 
         Arguments:
         ----------------
             Parameters: list or np array of size 2
-                1st entry:
+                - 1st entry:
                     F: float
                         - parameter of gray-scott model
-                2nd entry:
+                - 2nd entry:
                     k: float
                         - parameter of gray-scott model
+            til_convergence: bool, default=False
+                - if true, stop if relative change < rel_tol, or if n_time_points iterations have passed
+            rel_tol: float, default=1e-4
+                - relative tolerance level that determines stopping criterion
+            verbose: bool, default=False
+                - if true, print info and progress bar during solving.
         Returns:
         ----------------
             save_u_mat: float of len (n_save_frames * n_x * n_y)
@@ -175,7 +181,9 @@ class Solver(pints.ForwardModel):
         self.save_v_mat = np.zeros((self.n_save_frames, self.n_x, self.n_y))
         self.save_times = np.zeros(self.n_save_frames)
         self.i_save = 0
-
+        self.convergence = np.zeros((self.n_times))
+        if til_convergence:
+            self.convergence_reached = False
         ## Forward difference time solving loop:
         def forward_diff(i_t):
             if i_t in self.save_frames:  # if at the save interval, save matrices
@@ -186,13 +194,35 @@ class Solver(pints.ForwardModel):
             old_u = self.u_mat.copy()
             old_v = self.v_mat.copy()
             self.u_mat, self.v_mat = self.update_uv(old_u_mat=old_u, old_v_mat=old_v)  # do update
-
+            self.convergence[i_t] = ((np.sum(np.abs(self.u_mat - old_u)) / np.sum(np.abs(old_u)))
+                                    + (np.sum(np.abs(self.v_mat - old_v)) / np.sum(np.abs(old_v))))
+            if til_convergence:
+                if self.convergence[i_t] < rel_tol: ## reached convergence
+                    self.convergence_reached = True
+                    self.save_u_mat[self.i_save, :, :] = self.u_mat.copy()
+                    self.save_v_mat[self.i_save, :, :] = self.v_mat.copy()
+                    self.save_times[self.i_save] = i_t
+                    self.save_u_mat = self.save_u_mat[:self.i_save, :, :]
+                    self.save_v_mat = self.save_v_mat[:self.i_save, :, :]
+                    self.save_times = self.save_times[:self.i_save]
+                    self.n_save_frames = len(self.save_times)
+                    if verbose:
+                        print(f'Convergence reached after {i_tau}/{self.n_times} time points')
+                    return True
+                else:
+                    return False
+            else:
+                return False
         if verbose:  # show progress bar
             for i_tau in tqdm(range(self.n_times)):
-                forward_diff(i_t=i_tau)
+                conv = forward_diff(i_t=i_tau)
+                if conv:
+                    break
         elif not verbose:  # do not show progress bar
             for i_tau in range(self.n_times):
-                forward_diff(i_t=i_tau)
+                conv = forward_diff(i_t=i_tau)
+                if conv:
+                    break
 
         self.save_u_mat[-1, :, :] = self.u_mat.copy()
         self.save_v_mat[-1, :, :] = self.v_mat.copy()
