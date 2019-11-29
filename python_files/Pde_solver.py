@@ -146,7 +146,8 @@ class Solver(pints.ForwardModel):
 
         return new_u_mat, new_v_mat
 
-    def solve(self, parameters, til_convergence=False, rel_tol=1e-4, verbose=False):
+    def solve(self, parameters, til_convergence=False, rel_tol=1e-4, verbose=False,
+                init=True):
         """Solving function for PDE.
 
         Arguments:
@@ -164,6 +165,8 @@ class Solver(pints.ForwardModel):
                 - relative tolerance level that determines stopping criterion
             verbose: bool, default=False
                 - if true, print info and progress bar during solving.
+            init: bool, default=True
+                - if true, re-initialise u and v mat.
         Returns:
         ----------------
             save_u_mat: float of len (n_save_frames * n_x * n_y)
@@ -184,6 +187,9 @@ class Solver(pints.ForwardModel):
         self.convergence = np.zeros((self.n_times))
         if til_convergence:
             self.convergence_reached = False
+        if init:
+            self.u_mat = self.init_u_mat
+            self.v_mat = self.init_v_mat
         ## Forward difference time solving loop:
         def forward_diff(i_t):
             if i_t in self.save_frames:  # if at the save interval, save matrices
@@ -206,6 +212,10 @@ class Solver(pints.ForwardModel):
                     self.save_v_mat = self.save_v_mat[:self.i_save, :, :]
                     self.save_times = self.save_times[:self.i_save]
                     self.n_save_frames = len(self.save_times)
+                    self.n_times = i_t + 1
+                    self.t_end = i_t
+                    self.t_arr = np.linspace(self.t_start, self.t_end, self.n_times)
+
                     if verbose:
                         print(f'Convergence reached after {i_tau}/{self.n_times} time points')
                     return True
